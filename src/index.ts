@@ -1,13 +1,13 @@
 console.log('Домашка');
 interface post {
-  name: string;
-  info: string;
-  isImportant: boolean;
-  isCompleted: boolean;
-  id: number;
+  name?: string | null;
+  info?: string | null;
+  isImportant?: boolean | null;
+  isCompleted?: boolean | null;
+  id?: number | null;
 }
 
-//объект для запросов
+//объект для запросов POST
 const post25: post = {
   name: 'post 25',
   info: 'test post',
@@ -15,6 +15,14 @@ const post25: post = {
   isCompleted: true,
   id: 25,
 };
+
+//объект для запросов PATCH
+const postPatched: post = {
+  name: 'post 25(patched)',
+  id: 25,
+};
+
+//Класс fetch
 class BasicAgent {
   constructor(private _baseUrl: string) {}
 
@@ -30,11 +38,13 @@ class BasicAgent {
   };
 }
 
+//Класс REST-запросов
 class PostsAgent extends BasicAgent {
   constructor() {
     super('https://intership-liga.ru');
   }
 
+  //GET-запрос
   getPosts = async (): Promise<post[] | null> => {
     try {
       const res = await this.fetch<post[]>('/tasks', {
@@ -51,6 +61,7 @@ class PostsAgent extends BasicAgent {
     }
   };
 
+  //GET-запрос (один объект)
   getPost = async (taskId: number): Promise<post[] | null> => {
     try {
       const res = await this.fetch<post[]>(`/tasks/${taskId}`, {
@@ -67,6 +78,7 @@ class PostsAgent extends BasicAgent {
     }
   };
 
+  //POST-запрос
   addPost = async (postForPost: post): Promise<post | null> => {
     try {
       const res = await this.fetch<post>('/tasks/', {
@@ -83,10 +95,44 @@ class PostsAgent extends BasicAgent {
       return null;
     }
   };
+
+  //PATCH-запрос
+  patchPost = async (postForPatch: post, taskId: number): Promise<post | null> => {
+    try {
+      const res = await this.fetch<post>(`/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postForPatch),
+      });
+      console.log(`Data id = ${taskId} were changed!`, res);
+      return res;
+    } catch (err) {
+      console.log('Error of changing data!', err);
+      return null;
+    }
+  };
+
+  //DELETE-запрос
+  deletePost = async (taskId: number): Promise<boolean> => {
+    try {
+      await this.fetch<post>(`/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+      console.log(`Data id = ${taskId} were deleted!`);
+      return true;
+    } catch (err) {
+      console.log('Error of deleting data!', err);
+      return false;
+    }
+  };
 }
 
 const PostsAgentInstance = new PostsAgent();
 
 PostsAgentInstance.getPosts();
-PostsAgentInstance.getPost(663);
+PostsAgentInstance.getPost(666);
 PostsAgentInstance.addPost(post25);
+PostsAgentInstance.patchPost(postPatched, 25);
+PostsAgentInstance.deletePost(25);
