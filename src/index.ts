@@ -1,14 +1,16 @@
-console.log('Домашка');
-interface post {
-  name?: string | null;
-  info?: string | null;
-  isImportant?: boolean | null;
-  isCompleted?: boolean | null;
-  id?: number | null;
+//Драсьте
+console.log('Доброго вечерочку! Это домашка');
+
+interface Post {
+  name?: string | undefined;
+  info?: string | undefined;
+  isImportant?: boolean | undefined;
+  isCompleted?: boolean | undefined;
+  id?: number | undefined;
 }
 
 //объект для запросов POST
-const post25: post = {
+const post25: Post = {
   name: 'post 25',
   info: 'test post',
   isImportant: false,
@@ -17,9 +19,8 @@ const post25: post = {
 };
 
 //объект для запросов PATCH
-const postPatched: post = {
+const postPatched: Post = {
   name: 'post 25(patched)',
-  id: 25,
 };
 
 //Класс fetch
@@ -31,6 +32,7 @@ class BasicAgent {
 
     if (res.ok) {
       const result = (await res.json()) as T;
+
       return result;
     } else {
       throw new Error('Error!');
@@ -45,43 +47,47 @@ class PostsAgent extends BasicAgent {
   }
 
   //GET-запрос
-  getPosts = async (): Promise<post[] | null> => {
+  getPosts = async (): Promise<Post[] | null> => {
     try {
-      const res = await this.fetch<post[]>('/tasks', {
+      const res = await this.fetch<Post[]>('/tasks', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
       console.log('All posts are received!', res);
+
       return res;
     } catch (err) {
       console.log('Error of receiving requested data!', err);
+
       return null;
     }
   };
 
   //GET-запрос (один объект)
-  getPost = async (taskId: number): Promise<post[] | null> => {
+  getPost = async (taskId: number): Promise<Post[] | null> => {
     try {
-      const res = await this.fetch<post[]>(`/tasks/${taskId}`, {
+      const res = await this.fetch<Post[]>(`/tasks/${taskId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
       console.log(`Data id = ${taskId} are received!`, res);
+
       return res;
     } catch (err) {
       console.log('Error of receiving requested data!', err);
+
       return null;
     }
   };
 
   //POST-запрос
-  addPost = async (postForPost: post): Promise<post | null> => {
+  addPost = async (postForPost: Post): Promise<Post | null> => {
     try {
-      const res = await this.fetch<post>('/tasks/', {
+      const res = await this.fetch<Post>('/tasks/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,17 +95,19 @@ class PostsAgent extends BasicAgent {
         body: JSON.stringify(postForPost),
       });
       console.log(`Data id = ${postForPost.id} were posted!`, res);
+
       return res;
     } catch (err) {
       console.log('Error of posting data!', err);
+
       return null;
     }
   };
 
   //PATCH-запрос
-  patchPost = async (postForPatch: post, taskId: number): Promise<post | null> => {
+  patchPost = async (postForPatch: Post, taskId: number): Promise<Post | null> => {
     try {
-      const res = await this.fetch<post>(`/tasks/${taskId}`, {
+      const res = await this.fetch<Post>(`/tasks/${taskId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -107,9 +115,11 @@ class PostsAgent extends BasicAgent {
         body: JSON.stringify(postForPatch),
       });
       console.log(`Data id = ${taskId} were changed!`, res);
+
       return res;
     } catch (err) {
       console.log('Error of changing data!', err);
+
       return null;
     }
   };
@@ -117,13 +127,15 @@ class PostsAgent extends BasicAgent {
   //DELETE-запрос
   deletePost = async (taskId: number): Promise<boolean> => {
     try {
-      await this.fetch<post>(`/tasks/${taskId}`, {
+      await this.fetch<Post>(`/tasks/${taskId}`, {
         method: 'DELETE',
       });
       console.log(`Data id = ${taskId} were deleted!`);
+
       return true;
     } catch (err) {
       console.log('Error of deleting data!', err);
+
       return false;
     }
   };
