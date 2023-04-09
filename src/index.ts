@@ -1,27 +1,15 @@
+import { post25, postPatched } from './mockUploadPayload';
+import { Post } from './Task.entity';
+import {
+  ERROR_RECEIVING_DATA_MSG,
+  ERROR_CHANGING_DATA_MSG,
+  ERROR_POSTING_DATA_MSG,
+  ERROR_DELETING_DATA_MSG,
+  baseURL,
+} from './constants';
+
 //Драсьте
 console.log('Доброго вечерочку! Это домашка');
-
-interface Post {
-  name?: string | undefined;
-  info?: string | undefined;
-  isImportant?: boolean | undefined;
-  isCompleted?: boolean | undefined;
-  id?: number | undefined;
-}
-
-//объект для запросов POST
-const post25: Post = {
-  name: 'post 25',
-  info: 'test post',
-  isImportant: false,
-  isCompleted: true,
-  id: 25,
-};
-
-//объект для запросов PATCH
-const postPatched: Post = {
-  name: 'post 25(patched)',
-};
 
 //Класс fetch
 class BasicAgent {
@@ -43,7 +31,7 @@ class BasicAgent {
 //Класс REST-запросов
 class PostsAgent extends BasicAgent {
   constructor() {
-    super('https://intership-liga.ru');
+    super(baseURL);
   }
 
   //GET-запрос
@@ -59,7 +47,7 @@ class PostsAgent extends BasicAgent {
 
       return res;
     } catch (err) {
-      console.log('Error of receiving requested data!', err);
+      console.log(ERROR_RECEIVING_DATA_MSG, err);
 
       return null;
     }
@@ -67,6 +55,9 @@ class PostsAgent extends BasicAgent {
 
   //GET-запрос (один объект)
   getPost = async (taskId: number): Promise<Post[] | null> => {
+    if (!taskId) {
+      throw new Error(ERROR_RECEIVING_DATA_MSG);
+    }
     try {
       const res = await this.fetch<Post[]>(`/tasks/${taskId}`, {
         method: 'GET',
@@ -78,7 +69,7 @@ class PostsAgent extends BasicAgent {
 
       return res;
     } catch (err) {
-      console.log('Error of receiving requested data!', err);
+      console.log(ERROR_RECEIVING_DATA_MSG, err);
 
       return null;
     }
@@ -86,6 +77,9 @@ class PostsAgent extends BasicAgent {
 
   //POST-запрос
   addPost = async (postForPost: Post): Promise<Post | null> => {
+    if (!postForPost) {
+      throw new Error(ERROR_POSTING_DATA_MSG);
+    }
     try {
       const res = await this.fetch<Post>('/tasks/', {
         method: 'POST',
@@ -98,7 +92,7 @@ class PostsAgent extends BasicAgent {
 
       return res;
     } catch (err) {
-      console.log('Error of posting data!', err);
+      console.log(ERROR_POSTING_DATA_MSG, err);
 
       return null;
     }
@@ -106,6 +100,9 @@ class PostsAgent extends BasicAgent {
 
   //PATCH-запрос
   patchPost = async (postForPatch: Post, taskId: number): Promise<Post | null> => {
+    if (!taskId || !postForPatch) {
+      throw new Error(ERROR_CHANGING_DATA_MSG);
+    }
     try {
       const res = await this.fetch<Post>(`/tasks/${taskId}`, {
         method: 'PATCH',
@@ -118,7 +115,7 @@ class PostsAgent extends BasicAgent {
 
       return res;
     } catch (err) {
-      console.log('Error of changing data!', err);
+      console.log(ERROR_CHANGING_DATA_MSG, err);
 
       return null;
     }
@@ -126,6 +123,9 @@ class PostsAgent extends BasicAgent {
 
   //DELETE-запрос
   deletePost = async (taskId: number): Promise<boolean> => {
+    if (!taskId) {
+      throw new Error(ERROR_DELETING_DATA_MSG);
+    }
     try {
       await this.fetch<Post>(`/tasks/${taskId}`, {
         method: 'DELETE',
@@ -134,7 +134,7 @@ class PostsAgent extends BasicAgent {
 
       return true;
     } catch (err) {
-      console.log('Error of deleting data!', err);
+      console.log(ERROR_DELETING_DATA_MSG, err);
 
       return false;
     }
